@@ -1,61 +1,57 @@
 # APACHE-KAFKA-SPRINGBOOT-MICROSERVICES
-We have created 2 springboot consumer and producer.
+Kafka Spring Boot Microservices Project
 
-Commands to run Kafka on CLS
+This project demonstrates how to integrate Apache Kafka with Spring Boot Microservices for real-time data streaming and event-driven architecture. We have created 2 springboot consumer and producer.
 
-Start zookeeper
+🚀 Tech Stack
+Java: 21
+Spring Boot: 2.x / 3.x (depending on your setup)
+Apache Kafka: 4.0.0-2.13 (KRaft mode, no Zookeeper required)
+Build Tool: Maven
+IDE: IntelliJ IDEA
+API Testing Tool: Bruno
+
+📦 Prerequisites
+Make sure you have installed the following:
+Java 21
+Apache Kafka (I have used 4.0.0-2.13)
+IntelliJ IDEA
+Bruno (for API testing)
+Git (optional, for version control)
+
+⚙️ Setup Instructions
+1️⃣ Clone the Repository
+git clone https://github.com/your-username/APACHE-KAFKA-SPRINGBOOT-MICROSERVICES.git
+cd APACHE-KAFKA-SPRINGBOOT-MICROSERVICES
+
+2️⃣ Start Kafka (Windows - Command Line)
+Option A: With Zookeeper (legacy mode, not required in v4.0.0)
+# Start Zookeeper
 bin\windows\zookeeper-server-start.bat config\zookeeper.properties
 
-Without zookeeper with latest version (Not needed this step when zookeeper running)
-// UUID generated in powersell using -> [guid]::NewGuid()
-//3be90423-83ca-4628-8430-916ec37bc90e
-bin\windows\kafka-storage.bat format --standalone -t d08103ca-d2c3-4234-a4fb-97b1d93b5c25 -c config\server.properties
+Option B: Without Zookeeper (KRaft mode – default in Kafka 4.0.0)
+Format Storage Directory (one-time setup)
+# Generate UUID
+[guid]::NewGuid()
 
+# Example UUID: 3be90423-83ca-4628-8430-916ec37bc90e
 
-Start Kafka server
+# Format storage
+bin\windows\kafka-storage.bat format --standalone -t <generated-uuid> -c config\server.properties
+
+Start Kafka Broker
 bin\windows\kafka-server-start.bat config\server.properties
 
-Create topic 
-bin\windows\kafka-topics.bat --create --topic pnr-topic --bootstrap-server localhost:9092
+3️⃣ Build and Run Spring Boot Microservices
+Open the project in IntelliJ IDEA and build it:
+Project structure-> choose "SDK" and "Language level" your using
+Right click on project-> Maven-> Sync Project
 
-Create producer
-bin\windows\kafka-console-producer.bat --topic pnr-topic --bootstrap-server localhost:9092
+4️⃣ Test Using Bruno
+Open Bruno.
+Test: http://localhost:8080/location/latest
 
-Create consumer
-bin\windows\kafka-console-consumer.bat --topic pnr-topic --bootstrap-server localhost:9092
-bin\windows\kafka-console-consumer.bat --topic location-update-topic --from-beginning --bootstrap-server localhost:9092
-
-
-
-Update config\server.properties  if you face errors for configuration (only applicable for latest versions 4.0.0)
--------------------------------------
-# ------------------------------
-# Kafka 4.0.0 Single-node KRaft
-# ------------------------------
-
-# Node & process roles
-process.roles=broker,controller
-node.id=1
-
-# Controller quorum voters (node.id@host:port)
-controller.quorum.voters=1@localhost:9093
-
-# Listeners
-listeners=PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
-controller.listener.names=CONTROLLER
-inter.broker.listener.name=PLAINTEXT
-
-# Data directories (Windows-friendly)
-log.dirs=.\kafka-logs
-metadata.log.dir=.\kafka-metadata-logs
-
-# Internal topics - single node = replication factor 1
-offsets.topic.replication.factor=1
-transaction.state.log.replication.factor=1
-transaction.state.log.min.isr=1
-default.replication.factor=1
-min.insync.replicas=1
-
-# Misc
-num.partitions=1
--------------------------------------
+🛠️ Notes
+Kafka 4.0.0 uses KRaft mode → Zookeeper is not needed.
+UUID for storage formatting must be generated once before the first run.
+If you restart Kafka frequently, storage formatting is not required again.
